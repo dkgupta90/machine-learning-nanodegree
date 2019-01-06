@@ -13138,7 +13138,8 @@ qxInWGZmZmZmZlXiBMvMzMzMzKxK/j8Vz0PK43ViJQAAAABJRU5ErkJggg==
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Answer:</strong> To me, all of of the features seem quite important to ensure <b>safety</b> and <b>efficiency</b>. For efficiency, <b>deadline</b> and <b>waypoint</b> seem to be more important. On the other hand, the remaining features make sense for <b>safety</b>. Ideally, if we think of a human driving in a time-constrained setting, all of these features would be the things that the human will be thinking about to ensure safety and efficiency. Thus, these features seem appropriate.</p>
-<p>In this study, I decided to chose 4 features which are: <b>Left</b>, <b>oncoming</b>, <b>light</b> and <b>waypoint</b>. Here, it is assumed that one does not need to look at vehicles on the right, as well as provide priority to vehicles on the left. Hence, <b>Right</b> is dropped and <b>Left</b> is chosen. It does not seem computationally attractive to define <b>Deadline</b> or every point in the state-space, hence this term as well was dropped.</p>
+<p>In this study, I decided to chose 4 features which are: <b>Left</b>, <b>oncoming</b>, <b>light</b> and <b>waypoint</b>. Here, it is assumed that one does not need to look at vehicles on the right, as well as provide priority to vehicles on the left. Hence, <b>Right</b> is dropped and <b>Left</b> is chosen.</p>
+<p>There are not enough characterisitics of the problem that can help to meet the deadline. Any such attempt would be based on ignoring other vehicles and traffic lights, which would compromise with safety. Also, as can be seen in environment.py, there is a penalty factor that is a function of the remaining deadline. Due to this term, the reward granted at any move starts getting reduced. As the remaning time reduces, the penalty would increase, thereby affecting he training of the smartcab. Under such scenarios, the smartcab will start ignoring the rewards and try to achieve the deadline, thereby violating the rules. Given the low (negative) impact of <b>deadline</b>, adding it to the state space causes undesired increase in size of the state space. Hence, this term as well was dropped.</p>
 
 </div>
 </div>
@@ -16770,7 +16771,40 @@ sMzMzMzMzBrEAZaZmZmZmVmDOMAyMzMzMzNrkP8Hzyi4YFR+9zIAAAAASUVORK5CYII=
 <li>waypoint: left, right and forward</li>
 <li>inputs: left, right and oncoming</li>
 </ul>
-<p>Optimal policies would be:</p>
+<p>The essentials that define all the optimal policies for the smartcab are as follows:</p>
+<ul>
+<li>When the light is red:<ul>
+<li>If waypoint is forward, then action is None.</li>
+<li>If waypoint is right:<ul>
+<li>If oncoming is None and left is None, then turn right.</li>
+<li>If oncoming is Left, then action is None.</li>
+<li>If left is forward, then action is None.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>When the light is green:<ul>
+<li>If waypoint is Forward and oncoming is not None:<ul>
+<li>If left is None, then move Forward.</li>
+<li>If let is not None, then action is None.</li>
+</ul>
+</li>
+<li>If waypoint is Right and left is None:<ul>
+<li>If oncoming is Forward or Left, then turn Right.<ul>
+<li>else, action is None.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>If waypoint is Left and left is None:<ul>
+<li>If oncoming is Forward, then action is None.</li>
+<li>If oncoming is None, then turn Left.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Examples of optimal policies would be:</p>
 <ul>
 <li>Optimal 1:<ul>
 <li>('forward', 'green', 'left', None)<ul>
